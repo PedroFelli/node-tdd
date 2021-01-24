@@ -7,6 +7,7 @@ class TodoRepository {
   }
 
   list(){
+    
     return this.schedule.find()
 
   }

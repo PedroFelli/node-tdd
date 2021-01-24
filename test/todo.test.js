@@ -1,45 +1,66 @@
-const {describe, it, before} = require('mocha')
-const {expect} = require('chai')
-const Todo = require('../src/todo')
+const { describe, it, before, beforeEach, afterEach } = require("mocha");
+const { expect } = require("chai");
+const { createSandbox } = require("sinon");
+const Todo = require("../src/todo");
 
+describe("todo", () => {
+  let sandbox;
+  beforeEach(() => {
+    sandbox = createSandbox();
+  })
 
+  afterEach(() => sandbox.restore());
 
-describe('todo', () => {
-  describe('#isValid', () => {
-    it('should return invalid when creating an object without text', () => {
+  describe("#isValid", () => {
+    it("should return invalid when creating an object without text", () => {
       const data = {
-        text: '',
+        text: "",
         when: new Date("2020-12-01"),
-      }
+      };
 
       const todo = new Todo(data);
-      const result = todo.isValid()
+      const result = todo.isValid();
 
-      expect(result).to.be.not.ok
-    })
+      expect(result).to.be.not.ok;
+    });
 
     it('should return invalid when creating an object using the "when" propety invalid', () => {
       const data = {
-        text: 'Hello word',
+        text: "Hello word",
         when: new Date("20-12-01"),
-      }
+      };
 
       const todo = new Todo(data);
-      const result = todo.isValid()
+      const result = todo.isValid();
 
-      expect(result).to.be.not.ok
-    })
+      expect(result).to.be.not.ok;
+    });
 
     it('should have "id","text", "when" and "status" properties after creating object', () => {
       const data = {
-        text: 'Hello word',
+        text: "Hello word",
         when: new Date("2020-12-01"),
-      }
+      };
+
+      const expectedId = '00000001'
+      
+      const uuid = require('uuid')
+      const fakeUUUID = sandbox.fake.returns(expectedId)
+      sandbox.replace(uuid, "v4", fakeUUUID)
 
       const todo = new Todo(data);
-      const result = todo.isValid()
+      const expectedItem = {
+        text: data.text,
+        when: data.when,
+        status: "", 
+        id: expectedId
+      }
 
-      expect(result).to.be.ok
-    })
-  })
-})
+      const result = todo.isValid();
+      expect(result).to.be.ok;
+
+      expect(uuid.v4.calledOnce).to.be.ok;
+      expect(todo).to.be.deep.equal(expectedItem);
+    });
+  });
+});

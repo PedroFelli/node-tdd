@@ -6,7 +6,7 @@ class Todo {
     this.when = when
 
     this.status = ''
-    this.od = uuid.v4()
+    this.id = uuid.v4()
   }
 
   isValid(){
